@@ -1,0 +1,108 @@
+<style>
+    body {
+        margin: 0 !important;
+        overflow: hidden;
+    }
+    
+    .btn-circle {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 6px 0;
+        font-size: 12px;
+        line-height: 1.428571429;
+        border-radius: 15px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    }
+</style>
+<input type="text" id="display" autofocus style="min-width: 300px; position: absolute;" />
+
+<input type="text" id="color-droop" style="width: 150px; position: absolute; margin-top: 30px;" />
+<button type="button" id="color-button-droop" class="btn btn-default btn-circle btn-lg" style="position: absolute; margin-left:160px; margin-top: 25px; border:0"></button>
+
+<input type="text" id="color-input" style="width: 150px; position: absolute; right:0" />
+<button id="color-input-subbmit" onclick="forceCanable();" style="position: absolute; right:0;">Send</button>
+
+<img src="" id="capture" />
+<script>
+    const rgbToHex = (r, g, b) => '' + [r, g, b].map(x => {
+        const hex = x.toString(16)
+        return hex.length === 1 ? '0' + hex : hex
+    }).join('')
+
+    function forceCanable() {
+        myMouseX = document.getElementById('color-input').value.split(',')[0];
+        myMouseY = document.getElementById('color-input').value.split(',')[1];
+        canable();
+    }
+
+    function canable() {
+        var img = document.querySelector('#capture')
+        var p = ctx.getImageData(myMouseX, myMouseY, img.width, img.height).data;
+        var data = p;
+
+        var hex = rgbToHex(p[0], p[1], p[2])
+        var colorDroop = document.getElementById("color-droop");
+        colorDroop.value = hex
+
+        var btn = document.getElementById('color-button-droop');
+        btn.style.background = `#${hex}`
+    }
+
+
+    var imageExists = false;
+    // Cursor coordinate functions
+    var myX, myY, xyOn, myMouseX, myMouseY;
+    document.onmousemove = function(e) {
+        e = e || window.event;
+        var copyLabel = document.getElementById("display");
+        myMouseX = (e || event).clientX;
+        myMouseY = (e || event).clientY;
+        if (document.documentElement.scrollTop > 0) {
+            myMouseY = myMouseY + document.documentElement.scrollTop;
+        }
+
+        // console.log('image', img)
+
+        if (imageExists) {
+            // console.log(ctx.getImageData(myMouseX, myMouseY, 1, 1))
+            canable();
+        }
+
+        copyLabel.value = `robot.moveMouse(${myMouseX}, ${myMouseY});`
+
+        copyLabel.select();
+    }
+
+    var ctx;
+    document.onpaste = function(event) {
+        var items = event.clipboardData.items;
+        // console.log(JSON.stringify(items)); // will give you the mime types
+        var blob = items[0].getAsFile();
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            document.querySelector('#capture').src = event.target.result
+
+            var img = new Image();
+            img.src = event.target.result;
+
+            img.onload = function(e) {
+
+                var canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                ctx = canvas.getContext('2d')
+                ctx.width = img.width
+                ctx.height = img.height
+                ctx.canvas.width = img.width
+                ctx.canvas.height = img.height
+
+                ctx.drawImage(img, 0, 0);
+
+                imageExists = true;
+            }
+        }; // data url  
+        reader.readAsDataURL(blob);
+    }
+</script>
