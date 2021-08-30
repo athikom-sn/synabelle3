@@ -3,6 +3,9 @@ const core = require('./core/core.main.js');
 var robot = require("robotjs");
 
 module.exports = {
+    /**
+     * Code lists ที่อยากให้สุ่ม และพิมพ์
+     */
     codelists: [
         `<div class="display-3"><p>SURVEY (RESEARCH)</p></div>`,
         `<a  href="mailto:hello@epicmax.co"  
@@ -56,6 +59,7 @@ module.exports = {
             await core.sleep(4);
     
             /**
+             * 
              * พิมพ์โค้ด
              */        
             for (var i = 0; i < textsx.length; i++) {
