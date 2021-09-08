@@ -11,3 +11,13 @@ https://visualstudio.microsoft.com/
 
 พอลง environment ได้แล้ว ให้ทดสอบ run node
 nodejs capture.js
+
+(Code เริ่มแรก จะอยู่ที่ /src/controller.js ฟังก์ชัน automove)
+
+เพิ่มเติม
+1. สำหรับการหาตำแหน่งจอ ให้ใช้ MS Paint ดู x,y ซ้ายล่าง เพื่อให้เม้าส์ไปที่ตำแหน่งนั้นๆ
+2. คำสั่งเพิ่มเติมดูได้ที่ https://github.com/octalmage/robotjs 
+   โดยฟีเจอร์ที่ทำได้มีดังนี้
+2.1 ควบคุมเมาส์
+2.2 ควบคุมคีย์บอร์ด
+2.3 เทียบสี แคปภาพ เทียบภาพ บอทตัวนี้ยังไม่สามารถทำ object detetction ได้
