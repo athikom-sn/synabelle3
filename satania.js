@@ -1,4 +1,4 @@
 // import controller
-const controller = require('./src/controller.js');
+const controller = require('./src/satania.core.js');
 
-controller.automove();
+controller.ocr();

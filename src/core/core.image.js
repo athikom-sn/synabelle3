@@ -24,7 +24,7 @@ async function screenCaptureToFile2(robotScreenPic, path) {
                 image.bitmap.data[idx + 0] = robotScreenPic.image.readUInt8(pos++);
                 image.bitmap.data[idx + 3] = robotScreenPic.image.readUInt8(pos++);
             });
-            
+
             // console.log('image', image.bitmap.data);
             // console.log('\n');
 
@@ -50,7 +50,7 @@ async function screenCaptureRealTime(robotScreenPic, path) {
                 image.bitmap.data[idx + 3] = robotScreenPic.image.readUInt8(pos++);
             });
             //robotScreenPic.image.re
-            
+
             // console.log('image', image.bitmap.data);
             // console.log('\n');
             resolve(image.bitmap.data);
@@ -75,8 +75,8 @@ module.exports = {
 
 
 
-        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name}`)
-        // const bitmap = await screenCaptureRealTime(pic, `C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name}`);
+        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`)
+            // const bitmap = await screenCaptureRealTime(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`);
 
         //var t1 = performance.now();
         //console.log(`(x ${t1 - t0}) + " milliseconds.`);
@@ -89,8 +89,8 @@ module.exports = {
     // pic2 มาจาก database
     diff: async function(pic1, img2) {
         await this.sleep(1)
-        const img1 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${pic1}`));
-        // const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${pic2}`));
+        const img1 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${pic1}`));
+        // const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${pic2}`));
         const { width, height } = img1;
         const diff = new PNG({ width, height });
 
@@ -111,7 +111,7 @@ module.exports = {
         if (!container.hasOwnProperty('name2'))
             return false
 
-        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name2}`));
+        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name2}`));
 
         var isitok = false
             // 10 วิ พอ
@@ -144,7 +144,7 @@ module.exports = {
         if (!container.hasOwnProperty('name2'))
             return false
 
-        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name2}`));
+        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name2}`));
 
         var isitok = false
             // 10 วิ พอ
@@ -169,10 +169,10 @@ module.exports = {
     },
 
     diffWithOutWating: async function(pic1, img2) {
-        
-        const img1 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${pic1}`));
 
-        // const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${pic2}`));
+        const img1 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${pic1}`));
+
+        // const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${pic2}`));
         const { width, height } = img1;
         const diff = new PNG({ width, height });
 
@@ -189,11 +189,11 @@ module.exports = {
         // name 2 คือ name ของ database
         if (!container.hasOwnProperty('name2'))
             return false;
-            // var t0 = performance.now();
-        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name2}`));
+        // var t0 = performance.now();
+        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name2}`));
 
         const pic = robot.screen.capture(container.x, container.y, img2.width, img2.height);
-        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name}`);
+        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`);
 
         const percent = await this.diffWithOutWating(container.name, img2)
 
@@ -214,13 +214,13 @@ module.exports = {
         if (!container.hasOwnProperty('name2'))
             return false;
 
-        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name2}`));
+        const img2 = PNG.sync.read(fs.readFileSync(`C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name2}`));
 
         var isitok = false
             // 10 วิ พอ
 
         const pic = robot.screen.capture(container.x, container.y, img2.width, img2.height);
-        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\Downloads\\synabelle2\\synabelle\\assets\\image\\${container.name}`);
+        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`);
 
         const percent = await this.diffWithOutWating(container.name, img2)
 
