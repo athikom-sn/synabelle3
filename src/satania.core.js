@@ -6,10 +6,15 @@
 
 // import Tesseract from 'tesseract.js';
 
+
 const core = require("./core/core.main.js");
+
+const colours = require("./core/core.color");
 
 const btc = require('./core/price.find.js');
 const robot = require("robotjs");
+
+
 module.exports = {
     ocr: async() => {
         let isthisfisrt = true;
@@ -25,7 +30,15 @@ module.exports = {
 
             isthisfisrt = false;
         }
+    },
 
+
+
+    findVolume: async() => {
+        await core.sleep(1.5);
+
+        // วัดปริมาณขายจาก สีเขียว แต่ต้องถึงเท่าไรละ ถึงจะเข้า ????
+        await btc.getVolume();
     },
 
     accessMM: function(x, y) {

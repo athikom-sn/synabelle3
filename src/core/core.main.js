@@ -6,7 +6,19 @@ const { resolve } = require("path");
 const coreimage = require('./core.image.js');
 
 module.exports = {
+    img: null,
     sleep: function(ms) { return new Promise(resolve => setTimeout(resolve, ms * 1000)) },
+
+    move: async function(x, y) { robot.moveMouse(x * 0.8, y * 0.8) },
+
+    getColor: function(x, y) {
+        // พื้นที่ ที่จะรับสี
+        this.img = robot.screen.capture(x, y, 1, 1);
+
+        // เอาสี ที่ตำแหน่ง x,y ....
+        const hex = this.img.colorAt(0, 0);
+        return `#${hex}`
+    },
 
     _loop: async function(fn, ms) {
         return await new Promise((resolve, rejects) => {
