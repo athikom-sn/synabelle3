@@ -144,7 +144,8 @@ module.exports = {
         // พิกัดแท่งแรก
         //let first_px = 482,
         let first_px = 1106,
-            py = 863;
+            py = 863,
+            last_px = 1391;
 
         let sums = 0.00;
         let n = 0;
@@ -234,6 +235,7 @@ module.exports = {
         }
 
         // check ว่า last node มากกว่า max และเป็น สีเขียวไหม ถ้าเขา สองกรณีนี้ คือ ขาขึ้น ต้องรีบช้อน
+
 
         //console.log(arrays.reduce((a, b) => a + b, 0) / arrays.length)
         //console.log(sums, n);

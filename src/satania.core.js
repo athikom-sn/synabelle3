@@ -12,6 +12,7 @@ const core = require("./core/core.main.js");
 const colours = require("./core/core.color");
 
 const btc = require('./core/price.find.js');
+const volume = require('./core/volume.find');
 const robot = require("robotjs");
 
 
@@ -38,7 +39,7 @@ module.exports = {
         await core.sleep(1.5);
 
         // วัดปริมาณขายจาก สีเขียว แต่ต้องถึงเท่าไรละ ถึงจะเข้า ????
-        await btc.getVolume();
+        await volume.getVolume();
     },
 
     accessMM: function(x, y) {
