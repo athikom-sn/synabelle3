@@ -1,6 +1,3 @@
-const { createWorker } = require("tesseract.js");
-const worker = createWorker();
-
 const robot = require("robotjs");
 
 const core = require("./core.main.js");
@@ -18,15 +15,41 @@ const pool = mariadb.createPool({
 });
 
 module.exports = {
+    worker: null,
+    construct: function(tmp) {
+        this.worker = tmp.worker;
+    },
+
     barwidth: 8.4,
+
+    bar: {
+        last_px: 1399.5 - 8.4,
+        before_last_px: 1391.1 - 8.4,
+        third_px: 1374.3 - 8.4,
+
+        // py: 863,
+        py: 768,
+        barwidth: 8.4
+    },
+
     color: {
         green: '#7fd0b4',
-        red: '#f8a0ac'
+        red: '#f8a0ac',
+        greens: [
+            '#7fd0b4',
+            '#9fdbc7',
+        ],
+        whites: [
+            '#fafafa',
+        ],
     },
     basepath: `C:\\Users\\ammso\\foo\\satania\\assets\\image\\`,
     path: `C:\\Users\\ammso\\foo\\satania\\assets\\image\\price.png`,
 
     getVolume: async function() {
+
+        await coreimage.ocrpreparing(worker);
+
         // ใช้ กราฟ 5 นาที
         // พิกัดแท่งแรก
         //let first_px = 482,
@@ -41,6 +64,8 @@ module.exports = {
         let rn = 0;
 
         let max = 0.00;
+
+
 
         let rounds = Math.ceil((last_px - first_px) / this.barwidth);
 
@@ -124,9 +149,9 @@ module.exports = {
         core.move(last_px, py);
 
         await this.captureVolumeText(`volumefinal.png`);
-        await worker.load();
-        await worker.loadLanguage("eng");
-        await worker.initialize("eng");
+        // await worker.load();
+        // await worker.loadLanguage("eng");
+        // await worker.initialize("eng");
 
         const {
             data: { text },
@@ -146,6 +171,66 @@ module.exports = {
             console.log('last volume เขียว', price, 'vs', max);
         } else {
             console.log('last volume แดง', price, 'vs', max);
+        }
+    },
+
+    get: async function(x, text = '') {
+        //x = x + 8.4;
+        core.move(x, this.bar.py);
+
+        let lastvolume = await coreimage.translateFromImage({ x1: 523, y1: 764, x2: 613, y2: 781, filename: `volumefinal.png` }, this.worker);
+
+        const linecolor = core.getColor(x, 884);
+
+        let resultset = {
+            volume: lastvolume,
+            color: '?'
+        };
+
+        const isgreen = await corecolour.beLikely(linecolor, this.color.greens);
+        const iswhite = await corecolour.beLikely(linecolor, this.color.whites);
+
+        resultset.color = isgreen ? 'green' : iswhite ? 'white' : 'red';
+
+        return resultset;
+    },
+
+    getBeforeLastVolume: async function() {
+        core.move(this.bar.before_last_px, this.bar.py);
+
+        let lastvolume = await coreimage.translateFromImage({ x1: 533, y1: 763, x2: 587, y2: 781, filename: `volumefinal.png` }, worker);
+
+        // if (lastvolume > 100) {
+        if (lastvolume > 500) {
+            lastvolume = lastvolume / 1000;
+        }
+
+        const linecolor = core.getColor(this.bar.before_last_px, 884);
+
+        const color = await corecolour.beLikely(linecolor, this.color.greens);
+        if (color == true) {
+            console.log('before last volume เขียว', lastvolume);
+        } else {
+            console.log('before last volume แดง', lastvolume);
+        }
+    },
+
+    getLastVolume: async function() {
+        core.move(this.bar.last_px, this.bar.py);
+
+        let lastvolume = await coreimage.translateFromImage({ x1: 533, y1: 763, x2: 587, y2: 781, filename: `volumefinal.png` }, worker);
+
+        if (lastvolume > 100) {
+            lastvolume = lastvolume / 1000;
+        }
+
+        const linecolor = core.getColor(this.bar.last_px, 884);
+
+        const color = await corecolour.beLikely(linecolor, this.color.greens);
+        if (color == true) {
+            console.log('last volume เขียว', lastvolume);
+        } else {
+            console.log('last volume แดง', lastvolume);
         }
     },
 

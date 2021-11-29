@@ -18,6 +18,7 @@
     "homepage": "https://github.com/athikom-sn/synabelle#readme",
     "dependencies": {
         "async": "^3.2.0",
+        "axios": "^0.24.0",
         "express": "^4.17.1",
         "jimp": "^0.16.1",
         "mariadb": "^2.5.5",

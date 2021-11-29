@@ -65,6 +65,7 @@ async function screenCaptureRealTime(robotScreenPic, path) {
 }
 
 module.exports = {
+    basepath: `C:\\Users\\ammso\\foo\\satania\\assets\\image\\`,
     sleep: function(ms) { return new Promise(resolve => setTimeout(resolve, ms * 1000)) },
 
     save: async function(container, img2) {
@@ -73,9 +74,8 @@ module.exports = {
         const pic = robot.screen.capture(container.x, container.y, img2.width, img2.height);
         // around 12 millisec
 
-
-
-        await screenCaptureToFile2(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`)
+        //await screenCaptureToFile2(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`)
+        await screenCaptureToFile2(pic, `${this.basepath}${container.name}`)
             // const bitmap = await screenCaptureRealTime(pic, `C:\\Users\\ammso\\foo\\satania\\assets\\image\\${container.name}`);
 
         //var t1 = performance.now();
@@ -231,5 +231,48 @@ module.exports = {
         if (percent >= 61.6) {
             return true
         } else return false
-    }
+    },
+
+    ocrpreparing: async function(worker) {
+        await worker.load();
+        await worker.loadLanguage("eng");
+        await worker.initialize("eng");
+    },
+
+    translateFromImage: async function(container, worker) {
+        // มุมซ้ายบน, // มุมขวาล่าง
+        await this.save({
+            x: container.x1,
+            y: container.y1,
+            name: container.filename,
+        }, {
+            width: container.x2 - container.x1,
+            height: container.y2 - container.y1,
+        });
+
+        const {
+            data: { text },
+        } = await worker.recognize(this.basepath + container.filename);
+
+        // # เอาเฉพาะ number และ . เท่านั้น
+        let number = text.replace(/[^\d.MK]/g, "");
+        switch (number.charAt(number.length - 1)) {
+            case 'M':
+            case 'm':
+                number = number.slice(0, -1);
+                number = parseFloat(number);
+                break;
+            case 'K':
+                number = number.slice(0, -1);
+                number = parseFloat(number);
+                number = number / 1000;
+                break;
+            default:
+                // ไม่ติด K/M
+                number = parseFloat(number);
+                break;
+        }
+
+        return number;
+    },
 }

@@ -11,7 +11,7 @@ module.exports = {
         let g = e1.g - e2.g;
         let b = e1.b - e2.b;
         let threshold = Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
-
+        // console.log('threshold', threshold)
         if (threshold < 30) {
             return true;
         } else {
@@ -39,5 +39,25 @@ module.exports = {
             g: colours2[1],
             b: colours2[2]
         })
+    },
+
+    beLikely: async function(hex1, hex2) {
+        let status = false;
+        const colours1 = this.hexToRgb(hex1);
+        const parents = this;
+        Array.from(hex2).forEach(colours2 => {
+            const cr2 = parents.hexToRgb(colours2)
+            if (!status)
+                status = parents.diff({
+                    r: colours1[0],
+                    g: colours1[1],
+                    b: colours1[2]
+                }, {
+                    r: cr2[0],
+                    g: cr2[1],
+                    b: cr2[2]
+                });
+        });
+        return status;
     },
 }

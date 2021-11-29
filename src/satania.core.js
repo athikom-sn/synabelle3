@@ -1,20 +1,28 @@
-// import { createRequire } from "module";
-// const require = createRequire(
-//     import.meta.url);
-
-
-
-// import Tesseract from 'tesseract.js';
-
-
 const core = require("./core/core.main.js");
 
-const colours = require("./core/core.color");
+const { createWorker } = require("tesseract.js");
+
+const worker = createWorker({
+    langPath: 'C:\\Users\\ammso\\foo\\satania\\',
+    cacheMethod: 'none',
+    gzip: false
+});
 
 const btc = require('./core/price.find.js');
 const volume = require('./core/volume.find');
+
+const sfysx = require('./core/core.sfysx');
 const robot = require("robotjs");
 
+const api = require('./api/api.caller');
+
+(async() => {
+    await worker.load();
+    await worker.loadLanguage("eng");
+    await worker.initialize("eng");
+
+    volume.construct({ worker: worker });
+})();
 
 module.exports = {
     ocr: async() => {
@@ -33,92 +41,74 @@ module.exports = {
         }
     },
 
-
-
     findVolume: async() => {
         await core.sleep(1.5);
 
         // วัดปริมาณขายจาก สีเขียว แต่ต้องถึงเท่าไรละ ถึงจะเข้า ????
-        await volume.getVolume();
-    },
+        //await volume.getVolume();
+        // await volume.getBeforeLastVolume();
+        // await core.sleep(0.5);
+        // await volume.getLastVolume();
 
-    accessMM: function(x, y) {
-        robot.moveMouse(x * 0.8, y * 0.8);
-    },
+        // เช็ค 3 bar ถ้ามัน ขึ้น 2 บาร์ และบาร์ ที่ 3 มี volume (หรือพื้นที่เขียว ที่มากขึ้น)
+        // bar 1 เขียว
+        // bar 2 เขียว
+        // bar 3 มีพื้นที่เขียว + volume ที่เยอะ = แจ้งเตือนไลน์
 
-    accessMMSmoothty: function(x, y) {
-        robot.moveMouseSmooth(x * 0.8, y * 0.8);
-    },
+        //while (true) {
+        let max = 0.00;
 
-    automove: async function() {
-        // ?????? run ahk
-        // var exec = require('child_process').exec;
-        // const res = exec('"%programfiles%/AutoHotkey/AutoHotkey.exe" "C:\\Users\\ammso\\Desktop\\foo\\synabelle\\assets\\ahk\\autowing.ahk"');
+        // const res4 = await volume.get(1372.5, 'แท่ง 4 ');
+        // max = res4.volume > max && res4.color == 'green' ? res4.volume : max
+        //     //     // console.log(res4);
 
-        // loop for coding..
-        await core.sleep(1);
-        this.accessMM(467, 110);
+        // const res3 = await volume.get(1380.5, 'แท่ง 3 ');
+        // max = res3.volume > max && res3.color == 'green' ? res3.volume : max
+        //     //     // console.log(res3);
 
-        // return;
-        while (true) {
-            await core.sleep(3);
-            let solve = Math.floor(Math.random() * this.solves.length);
-            // let
-            solve = 1;
+        // const res2 = await volume.get(1388.5, 'แท่ง 2 ');
+        // max = res2.volume > max && res2.color == 'green' ? res2.volume : max
 
-            await core.sleep(1);
-            switch (solve) {
-                case 1:
-                    // coding
-                    await this.coding();
-                    break;
-                case 2:
-                    // searching
-                    await this.searching();
-                    break;
-                case 3:
-                    // do postman
-                    await this.postman();
-                    break;
-            }
-            await core.sleep(1);
-        }
-    },
+        // const average = (res2.volume + res3.volume + res4.volume) / 3;
 
-    docoding: async function(textsx) {
-        // newline
-        robot.typeString("\n");
-        await core.sleep(0.5);
-        // ?? tab
-        //robot.typeString('\t');
-        await core.sleep(3);
+        const res1 = await volume.get(1396.5, worker, 'แท่ง 1 ');
+        console.log(res1);
 
-        /**
-         *
-         * ?????????
-         */
-        for (var i = 0; i < textsx.length; i++) {
-            if (textsx[i] == " ") await core.sleep(0.02);
-            else await core.sleep(0.1);
-            robot.typeString(textsx[i]);
-        }
-        await core.sleep(1);
-        robot.keyTap("f1");
-        await core.sleep(1);
-        robot.keyTap("enter");
-    },
+        let cres1 = await sfysx.get(1396.5);
+        console.log(cres1);
 
-    dosearching: async function(textsx) {
-        await core.sleep(3);
+        // แท่ง ปัจจุบัน
+        // for (let i = 0; i < 10; i++) {
+        //     let res1 = await volume.get(1396.5, 'แท่ง 1 ');
+        //     // ต้องวัดความสูง ของ แท่งเขียวด้วย
+        //     if (res1.color == 'green') {
+        //         if (res1.volume > 1.5 * max) {
+        //             await api.dispatch('COCOS/USDT : ' + res1.volume);
+        //         }
+        //     }
 
-        for (var i = 0; i < textsx.length; i++) {
-            if (textsx[i] == " ") await core.sleep(0.02);
-            else await core.sleep(0.1);
-            robot.typeString(textsx[i]);
-        }
-        await core.sleep(1);
-        //robot.typeString('\n');
-        robot.keyTap("enter");
-        await core.sleep(3);
+        //     await core.sleep(1);
+        // }
+        //}
+
+        // send message to line
+        // await api.dispatch(res2.volume);
+
+        //let res1 = await volume.get(1391.1, 'แท่ง 1 ');
+
+        // เขียว
+        // volume 
+        //console.log(res1.color)
+        // [1397,570]
+
+        // for (let i = 0; i < 10; i++) {
+        //     let res1 = await volume.getVolumeAlternated(1391.1, 'แท่ง 1 ');
+
+        //     console.log(res1, 'res1 ');
+
+        //     //await api.dispatch('GALA/USDT : ' + res1.color + ' | volume (5min) : ' + res1.volume);
+
+        //     //await core.sleep(2);
+        // }
     },
 };
