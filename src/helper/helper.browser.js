@@ -21,9 +21,9 @@ module.exports = {
 
         robot.keyTap("v", "control");
 
-        //core.submit()
+        core.submit()
 
-        await core.sleep(10);
+        //await core.sleep(10);
     },
 
     color: {
