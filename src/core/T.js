@@ -5,21 +5,19 @@ const { resolve } = require("path");
 
 const coreimage = require('./core.image.js');
 
-
-
 module.exports = {
     img: null,
-    sleep: async function(ms) { return await new Promise(resolve => setTimeout(resolve, ms * 1000)) },
+    sleep: function(ms) { return new Promise(resolve => setTimeout(resolve, ms * 1000)) },
 
     move: async function(x, y) { robot.moveMouse(x * 0.8, y * 0.8) },
     moveto: async function(coord) { robot.moveMouse(coord[0] * 0.8, coord[1] * 0.8) },
     typing: async function(text) {
-        await this.sleep(0.5);
+        await this.sleep(0.5 D);
         for (var i = 0; i < text.length; i++) {
             if (text[i] == ' ')
                 await this.sleep(0.02);
-            // else
-            //     await this.sleep(0.01);
+            else
+                await this.sleep(0.02);
             robot.typeString(text[i]);
         }
     },

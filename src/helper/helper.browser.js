@@ -1,9 +1,31 @@
 const robot = require("robotjs");
 
-const core = require("./core.main.js");
-const corecolour = require("./core.color");
+const core = require("./../core/core.main");
+const corecolour = require("./../core/core.color");
+
+const clipboardy = require('clipboardy');
 
 module.exports = {
+    coord: {
+        url: [315, 68]
+    },
+    redirector: async function(url) {
+        //require('child_process').spawn('clip').stdin.end(util.inspect(url).replace(/'/g, ""));
+        clipboardy.writeSync(url);
+
+        core.moveto(this.coord.url);
+        robot.mouseClick();
+        await robot.keyTap("a", "control");
+
+        await core.sleep(0.5);
+
+        robot.keyTap("v", "control");
+
+        //core.submit()
+
+        await core.sleep(10);
+    },
+
     color: {
         greens: [
             // '#7fd0b4',
@@ -17,10 +39,6 @@ module.exports = {
         whites: [
             '#fafafa',
             '#f4f5f6',
-        ],
-
-        margins: [
-            '#ecedf0',
         ]
     },
 
@@ -75,44 +93,12 @@ module.exports = {
         }
 
         if (foundstatus) {
-            // ... วนรูปเพื่อหา พื้นที่สีเขียว ...
+            // ... ???????????? ?????????????? ...
             resultset = await this.get(x, _y);
             return resultset;
         } else {
-            // ... ขาว โพลน or Error detected
+            // ... ??? ???? or Error detected
             return resultset;
-        }
-    },
-
-    findmargin: async function(y) {
-        let foundstatus = false;
-        let _x = 1509;
-        let _static_x = 1509;
-        while (true) {
-            if (_x <= 1400) break;
-
-            let linecolor = core.getColor(_x, y);
-            let ismargin = await corecolour.beLikely(linecolor, this.color.margins, 30);
-
-            if (ismargin) {
-                foundstatus = true;
-                break;
-            }
-
-            _x -= 1;
-        }
-
-        if (foundstatus) {
-            // ... วนรูปเพื่อหา เส้น margin ...
-            return {
-                width: _static_x - _x
-            }
-        } else {
-            // default
-            console.log('margin not found')
-            return {
-                width: 66
-            }
         }
     },
 }

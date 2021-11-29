@@ -5,14 +5,14 @@ const { resolve } = require("path");
 
 module.exports = {
 
-    diff: function(e1, e2) {
+    diff: function(e1, e2, thresholdWish) {
         let rmean = (e1.r + e2.r) / 2;
         let r = e1.r - e2.r;
         let g = e1.g - e2.g;
         let b = e1.b - e2.b;
         let threshold = Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
-        // console.log('threshold', threshold)
-        if (threshold < 30) {
+        //console.log('threshold', threshold, thresholdWish)
+        if (threshold < thresholdWish) {
             return true;
         } else {
             return false;
@@ -41,10 +41,13 @@ module.exports = {
         })
     },
 
-    beLikely: async function(hex1, hex2) {
+    beLikely: async function(hex1, hex2, threshold = 30) {
         let status = false;
+        // สีที่จิ้มได้
         const colours1 = this.hexToRgb(hex1);
+
         const parents = this;
+        // สีที่ล้อคไว้
         Array.from(hex2).forEach(colours2 => {
             const cr2 = parents.hexToRgb(colours2)
             if (!status)
@@ -56,7 +59,7 @@ module.exports = {
                     r: cr2[0],
                     g: cr2[1],
                     b: cr2[2]
-                });
+                }, threshold);
         });
         return status;
     },

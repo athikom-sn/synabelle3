@@ -28,7 +28,7 @@ module.exports = {
         third_px: 1374.3 - 8.4,
 
         // py: 863,
-        py: 768,
+        py: 745,
         barwidth: 8.4
     },
 

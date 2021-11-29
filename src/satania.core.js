@@ -16,6 +16,10 @@ const robot = require("robotjs");
 
 const api = require('./api/api.caller');
 
+const browser = require('./helper/helper.browser');
+const util = require('util');
+
+// Set up OCR ..
 (async() => {
     await worker.load();
     await worker.loadLanguage("eng");
@@ -42,6 +46,7 @@ module.exports = {
     },
 
     findVolume: async() => {
+
         await core.sleep(1.5);
 
         // วัดปริมาณขายจาก สีเขียว แต่ต้องถึงเท่าไรละ ถึงจะเข้า ????
@@ -55,9 +60,6 @@ module.exports = {
         // bar 2 เขียว
         // bar 3 มีพื้นที่เขียว + volume ที่เยอะ = แจ้งเตือนไลน์
 
-        //while (true) {
-        let max = 0.00;
-
         // const res4 = await volume.get(1372.5, 'แท่ง 4 ');
         // max = res4.volume > max && res4.color == 'green' ? res4.volume : max
         //     //     // console.log(res4);
@@ -67,48 +69,74 @@ module.exports = {
         //     //     // console.log(res3);
 
         // const res2 = await volume.get(1388.5, 'แท่ง 2 ');
-        // max = res2.volume > max && res2.color == 'green' ? res2.volume : max
 
         // const average = (res2.volume + res3.volume + res4.volume) / 3;
 
-        const res1 = await volume.get(1396.5, worker, 'แท่ง 1 ');
-        console.log(res1);
+        // const res1 = await volume.get(1396.5, worker, 'แท่ง 1 ');
 
-        let cres1 = await sfysx.get(1396.5);
-        console.log(cres1);
+        //let cres1 = await sfysx.get(1396.5);
+        // core.move(1396.5, 758);
+        // const cres1 = await sfysx.findgreen(1396.5);
 
-        // แท่ง ปัจจุบัน
-        // for (let i = 0; i < 10; i++) {
-        //     let res1 = await volume.get(1396.5, 'แท่ง 1 ');
-        //     // ต้องวัดความสูง ของ แท่งเขียวด้วย
-        //     if (res1.color == 'green') {
-        //         if (res1.volume > 1.5 * max) {
-        //             await api.dispatch('COCOS/USDT : ' + res1.volume);
-        //         }
-        //     }
 
-        //     await core.sleep(1);
-        // }
-        //}
+        const coins = ['RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI'];
 
-        // send message to line
-        // await api.dispatch(res2.volume);
+        await core.sleep(1);
 
-        //let res1 = await volume.get(1391.1, 'แท่ง 1 ');
+        const mainurl = `https://www.binance.com/en/trade`;
 
-        // เขียว
-        // volume 
-        //console.log(res1.color)
-        // [1397,570]
+        for (var i = 0; i < coins.length; i++) {
+            const coin = coins[i];
 
-        // for (let i = 0; i < 10; i++) {
-        //     let res1 = await volume.getVolumeAlternated(1391.1, 'แท่ง 1 ');
+            await core.sleep(1);
+            await browser.redirector(`${mainurl}/${coin}_USDT`);
 
-        //     console.log(res1, 'res1 ');
+            const { width } = await sfysx.findmargin(864);
+            const current = {
+                x: 1391 + (66 - width),
+                y: 0
+            }
 
-        //     //await api.dispatch('GALA/USDT : ' + res1.color + ' | volume (5min) : ' + res1.volume);
+            core.move(current.x, 738)
+            const res = await sfysx.findgreen(current.x);
+            if (res.n > 10) {
+                console.log('green ??????? ...');
 
-        //     //await core.sleep(2);
-        // }
+                let datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+                await api.dispatch(coin + '/USDT : ' + res.n + ' ' + datestring);
+            }
+        }
+
+        await api.dispatch('หมดคู่ search แล้ว');
+
+        /*
+        coins.forEach(async function(coin) {
+            await browser.redirector(`${mainurl}/${coin}_USDT`);
+
+            //require('child_process').spawn('clip').stdin.end(util.inspect(`${mainurl}/${coin}_USDT`).replace(/'/g, ""));
+
+
+            //await core.sleep(1.25);
+            //console.log('why')
+
+            // const { width } = await sfysx.findmargin(864);
+            // const current = {
+            //     x: 1391 + (66 - width),
+            //     y: 0
+            // }
+
+            // core.move(current.x, 738)
+            // const res = await sfysx.findgreen(current.x);
+            // if (res.n > 10) {
+            //     console.log('green ??????? ...');
+
+            //     let datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+            //     await api.dispatch(coin + '/USDT : ' + res.n + ' ' + datestring);
+            // }
+        });
+        */
+
+        //await api.dispatch('หมดคู่ search แล้ว');
+        return;
     },
 };
