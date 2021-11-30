@@ -253,4 +253,34 @@ module.exports = {
 
         await coreimage.save(container, block);
     },
+
+    zone: async function(x) {
+        let y = 886;
+        let resultset = {
+            n: 0,
+        };
+        const grainpoint = 2;
+
+        while (true) {
+            if (y <= 700) {
+                // _error
+                console.error('Error : ', 'ไม่สามารถหาพื้นที่สีเขียวของ volume ได้');
+                resultset.n = -1;
+                break;
+            }
+
+            let linecolor = core.getColor(x, y);
+
+            let isgreen = await corecolour.beLikely(linecolor, this.color.greens, 30);
+
+            if (isgreen) {
+                y -= grainpoint;
+                resultset.n += 1;
+            } else {
+                // พื้นที่หมดแล้ว
+                break;
+            }
+        }
+        return resultset;
+    },
 };

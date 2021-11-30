@@ -6,21 +6,20 @@ const corecolour = require("./core.color");
 module.exports = {
     color: {
         greens: [
-            // '#7fd0b4',
-            // '#9fdbc7',
+            '#99e6c8',
             '#0ecb81',
+            '#19ce87',
+            '#6ddeb2',
             '#59daa7',
             '#adebd2',
             '#5cdaa9',
             '#34d294',
-
-            //'#d0f1e4',
-            //'#e9f6f1',
         ],
 
         whites: [
             '#fafafa',
-            '#f4f5f6',
+            '#f6f6f7'
+            // '#f4f5f6',
         ],
 
         margins: [
@@ -35,7 +34,9 @@ module.exports = {
         // ไม่เอา high กับ low
         x = x + 1;
 
-        const grainpoint = 1;
+        console.log('เริ่มหา พื้นที่สีเชียวที่ตำแหน่ง ', x, y);
+
+        const grainpoint = 2;
 
         let resultset = {
             color: '?',
@@ -44,10 +45,11 @@ module.exports = {
 
         while (true) {
             let linecolor = core.getColor(x, _y);
+            console.log('green?', linecolor)
             let isgreen = await corecolour.beLikely(linecolor, this.color.greens, 30);
 
             if (isgreen) {
-                // console.log('ยังเขียวอยู่', isgreen, _y);
+                console.log('ยังเขียวอยู่', isgreen, _y);
                 _y -= grainpoint;
                 resultset.n += 1;
             } else {
@@ -61,7 +63,9 @@ module.exports = {
 
     findgreen: async function(x) {
         let _y = 740
-            // x -= 1;
+
+        x += 1;
+
         let foundstatus = false;
         let resultset = {
             color: '?',
@@ -72,9 +76,11 @@ module.exports = {
             if (_y <= 0) break;
 
             let linecolor = core.getColor(x, _y);
-            let iswhite = await corecolour.beLikely(linecolor, this.color.whites, 30);
+            let iswhite = await corecolour.beLikely(linecolor, this.color.whites, 60);
 
             if (!iswhite) {
+                // ใช้เช็คว่า สีขาวที่อ่านเจอ คือ สีอะไร
+                //console.log('color indicators', linecolor, x, _y);
                 foundstatus = true;
                 break;
             }
@@ -84,10 +90,11 @@ module.exports = {
 
         if (foundstatus) {
             // ... วนรูปเพื่อหา พื้นที่สีเขียว ...
-            console.log('พบ สีเขียว ', x, _y - 2)
+            console.log('พบ สีเขียว ', x, _y - 1)
 
             // ไปนับสีเขียวต่อ ว่ามี พท. ขึ้นเยอะมากไหม
-            resultset = await this.get(x, _y - 2);
+            // ใช้ -1 เพื่อจะเลื่อนขึ้นไป อีก 1 ขีด
+            resultset = await this.get(x, _y - 1);
 
             // step ต่อไป check ว่า แท่งที่แล้ว เขียวมั้ย
             // ถ้าเขียว แจ้ง noti เลย
@@ -99,6 +106,7 @@ module.exports = {
         }
     },
 
+    // ใช้สำหรับหาระยะห่าง ระหว่าง พท. margin กับเส้นแรก เพื่อให้ พิกัดของ graph นิ่งขึ้น
     findmargin: async function(y) {
         let foundstatus = false;
         let _x = 1509;

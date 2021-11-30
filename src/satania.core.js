@@ -45,40 +45,7 @@ module.exports = {
         }
     },
 
-    findVolume: async() => {
-
-        await core.sleep(1.5);
-
-        // วัดปริมาณขายจาก สีเขียว แต่ต้องถึงเท่าไรละ ถึงจะเข้า ????
-        //await volume.getVolume();
-        // await volume.getBeforeLastVolume();
-        // await core.sleep(0.5);
-        // await volume.getLastVolume();
-
-        // เช็ค 3 bar ถ้ามัน ขึ้น 2 บาร์ และบาร์ ที่ 3 มี volume (หรือพื้นที่เขียว ที่มากขึ้น)
-        // bar 1 เขียว
-        // bar 2 เขียว
-        // bar 3 มีพื้นที่เขียว + volume ที่เยอะ = แจ้งเตือนไลน์
-
-        // const res4 = await volume.get(1372.5, 'แท่ง 4 ');
-        // max = res4.volume > max && res4.color == 'green' ? res4.volume : max
-        //     //     // console.log(res4);
-
-        // const res3 = await volume.get(1380.5, 'แท่ง 3 ');
-        // max = res3.volume > max && res3.color == 'green' ? res3.volume : max
-        //     //     // console.log(res3);
-
-        // const res2 = await volume.get(1388.5, 'แท่ง 2 ');
-
-        // const average = (res2.volume + res3.volume + res4.volume) / 3;
-
-        // const res1 = await volume.get(1396.5, worker, 'แท่ง 1 ');
-
-        //let cres1 = await sfysx.get(1396.5);
-        // core.move(1396.5, 758);
-        // const cres1 = await sfysx.findgreen(1396.5);
-
-
+    findVolume: async function() {
         //const coins = ['RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
         const coins = ['BETA'];
 
@@ -86,48 +53,54 @@ module.exports = {
 
         const mainurl = `https://www.binance.com/en/trade`;
 
-        while (true) {
-            for (var i = 0; i < coins.length; i++) {
-                const coin = coins[i];
+        //while (true) {
+        for (var i = 0; i < coins.length; i++) {
+            const coin = coins[i];
 
-                // search browser
-                // await browser.redirector(`${mainurl}/${coin}_USDT`);
+            // search browser
+            // await browser.redirector(`${mainurl}/${coin}_USDT`);
 
-                // รอ browser load ...
-                // await core.sleep(2.35);
+            // รอ browser load ...
+            // await core.sleep(2.35);
 
-                const { width } = await sfysx.findmargin(864);
-                let current = {
-                    x: 1391 + (66 - width),
-                    y: 0
-                }
-
-                //core.move(current.x, 760)
-                const res = await sfysx.findgreen(current.x);
-                console.log(`${coin} ${res.n}`);
-
-                // threshold
-                if (res.n > 1) {
-                    console.log('green ??????? ...', res.n);
-
-                    let datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
-
-                    current.x = current.x - 8;
-                    // บาร์ที่แล้ว
-                    let altbar = await sfysx.findgreen(current.x);
-                    if (altbar.n > 5) {
-                        console.log('green 2 ...', altbar.n);
-                    }
-
-                    // await api.dispatch(coin + '/USDT : ' + res.n + ' ' + datestring);
-                }
-
-                await core.sleep(1.5);
+            const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
+            let current = {
+                x: 1391 + width,
+                y: 0
             }
-            await core.sleep(10);
-        }
 
-        // await api.dispatch('หมดคู่ search แล้ว');
+            // ความสูงของกราฟ
+            const res = await sfysx.findgreen(current.x);
+            console.log(`${coin} ${res.n}`);
+
+            // volume ที่แลกเปลี่ยนกันในช่วงนี้
+            const { n } = await volume.zone(current.x);
+            console.log('พื้นที่สีเขียว', n);
+
+            // threshold
+            if (res.n > 1) {
+                // console.log('green ??????? ...', res.n);
+
+                /*
+                let datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+
+                current.x = current.x - 8;
+                // บาร์ที่แล้ว
+                let altbar = await sfysx.findgreen(current.x);
+                if (altbar.n > 5) {
+                    console.log('green 2 ...', altbar.n);
+                }*/
+
+                // await api.dispatch(coin + '/USDT : ' + res.n + ' ' + datestring);
+            }
+
+            //            await core.sleep(1.5);
+
+        }
+        //    await core.sleep(10);
+
+
+        await api.dispatch('done');
 
         /*
         coins.forEach(async function(coin) {
