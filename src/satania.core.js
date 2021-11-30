@@ -79,35 +79,55 @@ module.exports = {
         // const cres1 = await sfysx.findgreen(1396.5);
 
 
-        const coins = ['RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI'];
+        //const coins = ['RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
+        const coins = ['BETA'];
 
         await core.sleep(1);
 
         const mainurl = `https://www.binance.com/en/trade`;
 
-        for (var i = 0; i < coins.length; i++) {
-            const coin = coins[i];
+        while (true) {
+            for (var i = 0; i < coins.length; i++) {
+                const coin = coins[i];
 
-            await core.sleep(1);
-            await browser.redirector(`${mainurl}/${coin}_USDT`);
+                // search browser
+                // await browser.redirector(`${mainurl}/${coin}_USDT`);
 
-            const { width } = await sfysx.findmargin(864);
-            const current = {
-                x: 1391 + (66 - width),
-                y: 0
+                // รอ browser load ...
+                // await core.sleep(2.35);
+
+                const { width } = await sfysx.findmargin(864);
+                let current = {
+                    x: 1391 + (66 - width),
+                    y: 0
+                }
+
+                //core.move(current.x, 760)
+                const res = await sfysx.findgreen(current.x);
+                console.log(`${coin} ${res.n}`);
+
+                // threshold
+                if (res.n > 1) {
+                    console.log('green ??????? ...', res.n);
+
+                    let datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+
+                    current.x = current.x - 8;
+                    // บาร์ที่แล้ว
+                    let altbar = await sfysx.findgreen(current.x);
+                    if (altbar.n > 5) {
+                        console.log('green 2 ...', altbar.n);
+                    }
+
+                    // await api.dispatch(coin + '/USDT : ' + res.n + ' ' + datestring);
+                }
+
+                await core.sleep(1.5);
             }
-
-            core.move(current.x, 738)
-            const res = await sfysx.findgreen(current.x);
-            if (res.n > 10) {
-                console.log('green ??????? ...');
-
-                let datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
-                await api.dispatch(coin + '/USDT : ' + res.n + ' ' + datestring);
-            }
+            await core.sleep(10);
         }
 
-        await api.dispatch('หมดคู่ search แล้ว');
+        // await api.dispatch('หมดคู่ search แล้ว');
 
         /*
         coins.forEach(async function(coin) {

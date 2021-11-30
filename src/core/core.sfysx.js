@@ -9,9 +9,13 @@ module.exports = {
             // '#7fd0b4',
             // '#9fdbc7',
             '#0ecb81',
+            '#59daa7',
             '#adebd2',
             '#5cdaa9',
-            '#d0f1e4'
+            '#34d294',
+
+            //'#d0f1e4',
+            //'#e9f6f1',
         ],
 
         whites: [
@@ -28,7 +32,10 @@ module.exports = {
         let _y = y;
         let n = 1;
 
-        const grainpoint = 2;
+        // ไม่เอา high กับ low
+        x = x + 1;
+
+        const grainpoint = 1;
 
         let resultset = {
             color: '?',
@@ -37,13 +44,14 @@ module.exports = {
 
         while (true) {
             let linecolor = core.getColor(x, _y);
-            let isgreen = await corecolour.beLikely(linecolor, this.color.greens);
+            let isgreen = await corecolour.beLikely(linecolor, this.color.greens, 30);
 
             if (isgreen) {
+                // console.log('ยังเขียวอยู่', isgreen, _y);
                 _y -= grainpoint;
                 resultset.n += 1;
             } else {
-                console.log('not green', linecolor);
+                console.log('เปลี่ยนจากเขียวเป็นขาว ', x, _y, linecolor);
                 break;
             }
         }
@@ -64,22 +72,29 @@ module.exports = {
             if (_y <= 0) break;
 
             let linecolor = core.getColor(x, _y);
-            let iswhite = await corecolour.beLikely(linecolor, this.color.whites);
+            let iswhite = await corecolour.beLikely(linecolor, this.color.whites, 30);
 
             if (!iswhite) {
                 foundstatus = true;
                 break;
             }
 
-            _y -= 2;
+            _y -= 1;
         }
 
         if (foundstatus) {
             // ... วนรูปเพื่อหา พื้นที่สีเขียว ...
-            resultset = await this.get(x, _y);
+            console.log('พบ สีเขียว ', x, _y - 2)
+
+            // ไปนับสีเขียวต่อ ว่ามี พท. ขึ้นเยอะมากไหม
+            resultset = await this.get(x, _y - 2);
+
+            // step ต่อไป check ว่า แท่งที่แล้ว เขียวมั้ย
+            // ถ้าเขียว แจ้ง noti เลย
             return resultset;
         } else {
             // ... ขาว โพลน or Error detected
+            console.log('ขาวโพลน')
             return resultset;
         }
     },
