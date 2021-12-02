@@ -283,4 +283,32 @@ module.exports = {
         }
         return resultset;
     },
+
+    // function : find all
+    // ค้นหา แบบไม่สนว่าจะเป็น สีอะไร
+    // เริ่มค้นที่ตำแหน่ง x=1398 (default) , y=887 (default)
+    greenzone: async function(x = Number(1398), y = Number(887)) {
+        corecolour.setup({ reset: true });
+
+        const lastCoord = { x: x, y: Number(760) };
+        let resultset = { n: Number(0) };
+
+        const height = Number(y - lastCoord.y);
+
+        let n = 0;
+        while (y > lastCoord.y) {
+
+            const { color } = corecolour.colorlaneTest(x, y, { start: lastCoord.y, height: height, fy: y - lastCoord.y });
+            // console.log(color)
+            const isgreen = await corecolour.beLikely(color, this.color.greens, 30);
+            if (isgreen) {
+                resultset.n += 1;
+            }
+
+            y -= 1;
+            n++;
+        }
+
+        return resultset;
+    },
 };

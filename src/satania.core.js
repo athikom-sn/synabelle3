@@ -132,4 +132,33 @@ module.exports = {
         //await api.dispatch('หมดคู่ search แล้ว');
         return;
     },
+
+    doing: async function() {
+        await core.sleep(1);
+        const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
+
+        let stacks = 0;
+
+        // ทั้งหมด 5 แท่ง
+        for (var i = 0; i < 5; i++) {
+            let current = {
+                x: Number(1391 + width - (i * 8)),
+                y: 0
+            }
+
+            // หาความยาว แท่งเขียว 
+            const res = await sfysx.findall(current.x);
+            console.log('ความสูงแท่งเขียว', res.n);
+
+            // volume ที่แลกเปลี่ยนกันในช่วงนี้
+            const { n } = await volume.greenzone(current.x);
+            console.log('พื้นที่สีเขียว', n);
+
+            // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
+            if (true) {
+                stacks++;
+            }
+        }
+
+    },
 };

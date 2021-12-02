@@ -3,6 +3,8 @@ const robot = require("robotjs");
 const core = require("./core.main.js");
 const corecolour = require("./core.color");
 
+const { performance } = require('perf_hooks');
+
 module.exports = {
     color: {
         greens: [
@@ -137,5 +139,38 @@ module.exports = {
                 width: 66
             }
         }
+    },
+
+    // function : find all
+    // ค้นหา แบบไม่สนว่าจะเป็น สีอะไร
+    // เริ่มค้นที่ตำแหน่ง x=1398 (default) , y=737 (default)
+    findall: async function(x = Number(1398), y = Number(737)) {
+        corecolour.setup({ reset: true })
+
+        const lastCoord = { x: x, y: Number(410) };
+        let resultset = { n: Number(0) };
+
+        var startTime = performance.now()
+
+        const height = Number(y - lastCoord.y)
+
+        while (y > lastCoord.y) {
+
+            // const { color } = corecolour.colorlane(x + 1, y);
+            const { color } = corecolour.colorlaneTest(x + 1, y, { start: lastCoord.y, height: height, fy: y - lastCoord.y });
+
+            const isgreen = await corecolour.beLikely(color, this.color.greens, 30);
+
+            if (isgreen) {
+                resultset.n += 1;
+            }
+
+            y -= 1;
+        }
+
+        var endTime = performance.now()
+
+        // console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
+        return resultset;
     },
 }
