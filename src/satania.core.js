@@ -137,6 +137,11 @@ module.exports = {
         await core.sleep(1);
         const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
 
+        // prepare improve search engine
+        const coins = ['RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
+        const mainurl = `https://www.binance.com/en/trade`;
+
+
         let stacks = 0;
 
         // ทั้งหมด 5 แท่ง
