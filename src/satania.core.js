@@ -19,15 +19,16 @@ const coinapi = require('./api/api.coin');
 
 const browser = require('./helper/helper.browser');
 const util = require('util');
+const { performance } = require('perf_hooks');
 
 // Set up OCR ..
-(async() => {
-    await worker.load();
-    await worker.loadLanguage("eng");
-    await worker.initialize("eng");
+// (async() => {
+//     await worker.load();
+//     await worker.loadLanguage("eng");
+//     await worker.initialize("eng");
 
-    volume.construct({ worker: worker });
-})();
+//     volume.construct({ worker: worker });
+// })();
 
 module.exports = {
     ocr: async() => {
@@ -137,21 +138,26 @@ module.exports = {
     // main script
     doing: async function() {
         await core.sleep(1);
-        const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
 
-        // prepare improve search engine
         //const coins = ['ANY', 'RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
-        const coins = await coinapi.get();
+        // const coins = await coinapi.get();
+        const coins = { data: [{ name: "DEXE" }, { name: "DAR" }, { name: 'AXS' }, { name: 'MBOX' }] };
 
         const mainurl = `https://www.binance.com/en/trade`;
 
-        await browser.open(`${mainurl}/${coins[0]}_USDT`);
+        var starts = performance.now();
+        for (var index = 0; index < coins.data.length; index++) {
 
+            const { name } = coins.data[index];
 
-        Array.from(coins).forEach(async coin => {
+            await browser.open(`${mainurl}/${name}_USDT`);
+
+            const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
+
             let stacks = 0;
 
-            for (var i = 0; i < 5; i++) {
+            // เอากี่แท่ง
+            for (var i = 0; i < 1; i++) {
                 let current = {
                     x: Number(1391 + width - (i * 8)),
                     y: 0
@@ -163,14 +169,23 @@ module.exports = {
 
                 // volume ที่แลกเปลี่ยนกันในช่วงนี้
                 const { n } = await volume.greenzone(current.x);
-                console.log('พื้นที่สีเขียว', n);
+                // console.log('พื้นที่สีเขียว', n);
 
                 // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
-                if (true) {
+                if (res.n > 40) {
                     stacks++;
+                    await api.dispatch(`${name} amp : ${res.n} vol : ${n}`);
                 }
+
+                // ให้หาว่า แท่งนี้ กับแท่งที่แล้ว จำนวนห่างกันเท่าไร
+                // แล้วยังเขียวอยุ่ไหม อันนี้น่าสน ..
             }
-        });
+        };
+        var ends = performance.now();
+
+        // await api.dispatch('Heyyy' + (ends - starts));
+
+        console.log('test', ends - starts)
 
         return;
 
@@ -206,7 +221,7 @@ module.exports = {
         await core.sleep(1);
 
         // เปิดหน้าตลาดขึ้นมา
-        //await browser.openMarket();
+        await browser.openMarket();
 
         const coins = await coinapi.get();
         console.log(coins.data)

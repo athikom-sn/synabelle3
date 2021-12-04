@@ -41,30 +41,31 @@ module.exports = {
 
         core.submit();
 
-        await core.sleep(1);
+        await core.sleep(0.3);
 
         // find til it already open ...
         // หาตำแหน่ง Arrow Down ว่ากราฟโหลดเสร็จหรือยัง
 
-        var startTime = performance.now();
+        // var startTime = performance.now();
         for (let i = 0; i < 100; i++) {
             const linecolor = core.getColor(this.coord.arrowDown[0], this.coord.arrowDown[1]);
             const iswhite = await corecolour.beLikely(linecolor, this.color.loading, 60);
 
             if (!iswhite) {
                 // foundstatus = true;
-                console.log('last', linecolor);
+                await core.sleep(0.2);
+                // console.log('last', linecolor);
                 break;
             }
 
             await core.sleep(0.1);
         }
 
-        await core.sleep(0.5);
+        //await core.sleep(0.5);
 
-        const endTime = performance.now();
+        // const endTime = performance.now();
 
-        const timeDiff = (endTime - startTime);
+        // const timeDiff = (endTime - startTime);
 
         // console.log('exit [browser openning]', timeDiff);
     },
