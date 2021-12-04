@@ -105,4 +105,12 @@ module.exports = {
         });
         return status;
     },
+
+
+    color: {
+        whites: [
+            '#fafafa',
+            '#f6f6f7'
+        ]
+    }
 };
