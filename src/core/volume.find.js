@@ -6,13 +6,13 @@ const corecolour = require("./core.color");
 
 const { exec } = require("child_process");
 
-const mariadb = require("mariadb");
-const pool = mariadb.createPool({
-    host: "localhost",
-    user: "root",
-    password: "DontForgetMeAgain",
-    database: "santacia",
-});
+// const mariadb = require("mariadb");
+// const pool = mariadb.createPool({
+//     host: "localhost",
+//     user: "root",
+//     password: "DontForgetMeAgain",
+//     database: "santacia",
+// });
 
 module.exports = {
     worker: null,

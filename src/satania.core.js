@@ -8,13 +8,14 @@ const worker = createWorker({
     gzip: false
 });
 
-const btc = require('./core/price.find.js');
+//const btc = require('./core/price.find.js');
 const volume = require('./core/volume.find');
 
 const sfysx = require('./core/core.sfysx');
 const robot = require("robotjs");
 
 const api = require('./api/api.caller');
+const coinapi = require('./api/api.coin');
 
 const browser = require('./helper/helper.browser');
 const util = require('util');
@@ -133,15 +134,45 @@ module.exports = {
         return;
     },
 
+    // main script
     doing: async function() {
         await core.sleep(1);
         const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
 
         // prepare improve search engine
-        const coins = ['ANY', 'RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
+        //const coins = ['ANY', 'RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
+        const coins = await coinapi.get();
+
         const mainurl = `https://www.binance.com/en/trade`;
 
         await browser.open(`${mainurl}/${coins[0]}_USDT`);
+
+
+        Array.from(coins).forEach(async coin => {
+            let stacks = 0;
+
+            for (var i = 0; i < 5; i++) {
+                let current = {
+                    x: Number(1391 + width - (i * 8)),
+                    y: 0
+                }
+
+                // หาความยาว แท่งเขียว 
+                const res = await sfysx.findall(current.x);
+                console.log('ความสูงแท่งเขียว', res.n);
+
+                // volume ที่แลกเปลี่ยนกันในช่วงนี้
+                const { n } = await volume.greenzone(current.x);
+                console.log('พื้นที่สีเขียว', n);
+
+                // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
+                if (true) {
+                    stacks++;
+                }
+            }
+        });
+
+        return;
 
         //return;
         let stacks = 0;
@@ -167,5 +198,17 @@ module.exports = {
             }
         }
 
+    },
+
+    // 
+    findAvailableTrade: async function() {
+        // รอ 1 วิ เพื่อ เริ่มต้นโลกใหม่ ..
+        await core.sleep(1);
+
+        // เปิดหน้าตลาดขึ้นมา
+        //await browser.openMarket();
+
+        const coins = await coinapi.get();
+        console.log(coins.data)
     },
 };

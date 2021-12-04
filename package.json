@@ -21,6 +21,7 @@
         "axios": "^0.24.0",
         "clipboardy": "^2.3.0",
         "copy-to-clipboard": "^3.3.1",
+        "cors": "^2.8.5",
         "express": "^4.17.1",
         "jimp": "^0.16.1",
         "mariadb": "^2.5.5",
