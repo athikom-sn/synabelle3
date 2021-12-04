@@ -142,6 +142,8 @@ module.exports = {
         const mainurl = `https://www.binance.com/en/trade`;
 
 
+        return;
+
         let stacks = 0;
 
         // ทั้งหมด 5 แท่ง
