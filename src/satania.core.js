@@ -206,6 +206,7 @@ module.exports = {
                 }
 
                 if (stacksum >= 100) {
+                    // ..
                     await api.dispatch(`${name} => bar sum เยอะ ${datestring}`);
                 }
 
