@@ -18,7 +18,7 @@ app.get('/get', async function(req, res, next) {
     let conn;
     try {
         conn = await pool.getConnection();
-        const response = await conn.query("SELECT name FROM `coin`", []);
+        const response = await conn.query("SELECT name FROM `coin` WHERE status=?", [1]);
         res.json({ data: response });
     } catch (_) {}
 });

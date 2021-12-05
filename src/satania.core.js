@@ -1,3 +1,5 @@
+var SYS_STATUS = 1;
+
 const core = require("./core/core.main.js");
 
 const { createWorker } = require("tesseract.js");
@@ -20,6 +22,8 @@ const coinapi = require('./api/api.coin');
 const browser = require('./helper/helper.browser');
 const util = require('util');
 const { performance } = require('perf_hooks');
+
+const statusApi = require('./api/api.status');
 
 // Set up OCR ..
 // (async() => {
@@ -139,80 +143,83 @@ module.exports = {
     doing: async function() {
         await core.sleep(1);
 
+        const isTest = process.argv.slice(2)[0] == null ? false : true;
+
         //const coins = ['ANY', 'RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
         // const coins = await coinapi.get();
-        const coins = { data: [{ name: "DEXE" }, { name: "DAR" }, { name: 'AXS' }, { name: 'MBOX' }] };
+        // const coins = { data: [{ name: "GTO" }, { name: "NULS" }, { name: "FIO" }, { name: 'AXS' }, { name: 'MBOX' }] };
+        const coins = isTest ? { data: [{ name: "LUNA" }] } : await coinapi.get();
 
         const mainurl = `https://www.binance.com/en/trade`;
 
-        var starts = performance.now();
-        for (var index = 0; index < coins.data.length; index++) {
-
-            const { name } = coins.data[index];
-
-            await browser.open(`${mainurl}/${name}_USDT`);
-
-            const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
-
-            let stacks = 0;
-
-            // เอากี่แท่ง
-            for (var i = 0; i < 1; i++) {
-                let current = {
-                    x: Number(1391 + width - (i * 8)),
-                    y: 0
-                }
-
-                // หาความยาว แท่งเขียว 
-                const res = await sfysx.findall(current.x);
-                console.log('ความสูงแท่งเขียว', res.n);
-
-                // volume ที่แลกเปลี่ยนกันในช่วงนี้
-                const { n } = await volume.greenzone(current.x);
-                // console.log('พื้นที่สีเขียว', n);
-
-                // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
-                if (res.n > 40) {
-                    stacks++;
-                    await api.dispatch(`${name} amp : ${res.n} vol : ${n}`);
-                }
-
-                // ให้หาว่า แท่งนี้ กับแท่งที่แล้ว จำนวนห่างกันเท่าไร
-                // แล้วยังเขียวอยุ่ไหม อันนี้น่าสน ..
+        var r = 0;
+        const maxround = isTest ? 1 : 36;
+        while (r < maxround) {
+            const { status } = await statusApi.get();
+            if (status != 1) {
+                break;
             }
-        };
-        var ends = performance.now();
+
+            for (var index = 0; index < coins.data.length; index++) {
+                const { name } = coins.data[index];
+
+                if (!isTest)
+                    await browser.open(`${mainurl}/${name}_USDT`);
+
+                const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
+
+                let stacks = 0;
+                let stacksum = 0;
+
+                // เอากี่แท่ง
+                for (var i = 0; i < 4; i++) {
+                    let current = {
+                        x: Number(1391 + width - (i * 8)),
+                        y: 0
+                    }
+
+                    // หาความยาว แท่งเขียว 
+                    const res = await sfysx.findall(current.x);
+                    // console.log('ความสูงแท่งเขียว', res.n);
+
+                    // volume ที่แลกเปลี่ยนกันในช่วงนี้
+                    const { n } = await volume.greenzone(current.x);
+                    console.log('bar', res.n, 'vol', n);
+
+                    stacksum += (res.n);
+
+                    // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
+                    if (res.n > 5) {
+                        stacks++;
+                        // console.log('send line')
+                        // await api.dispatch(`${name} => bar ${res.n}, vol ${n}`);
+                    }
+                    // ให้หาว่า แท่งนี้ กับแท่งที่แล้ว จำนวนห่างกันเท่าไร
+                    // แล้วยังเขียวอยุ่ไหม อันนี้น่าสน ..
+                }
+
+                const datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+
+                // เขียว 3 ส่ง line
+                if (stacks >= 3) {
+                    await api.dispatch(`${name} => bar เขียว สาม ${datestring}`);
+                }
+
+                if (stacksum >= 100) {
+                    await api.dispatch(`${name} => bar sum เยอะ ${datestring}`);
+                }
+
+
+            };
+            r++;
+        }
+        // var ends = performance.now();
 
         // await api.dispatch('Heyyy' + (ends - starts));
 
-        console.log('test', ends - starts)
+        // console.log('test', ends - starts);
 
         return;
-
-        //return;
-        let stacks = 0;
-
-        // ทั้งหมด 5 แท่ง
-        for (var i = 0; i < 5; i++) {
-            let current = {
-                x: Number(1391 + width - (i * 8)),
-                y: 0
-            }
-
-            // หาความยาว แท่งเขียว 
-            const res = await sfysx.findall(current.x);
-            console.log('ความสูงแท่งเขียว', res.n);
-
-            // volume ที่แลกเปลี่ยนกันในช่วงนี้
-            const { n } = await volume.greenzone(current.x);
-            console.log('พื้นที่สีเขียว', n);
-
-            // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
-            if (true) {
-                stacks++;
-            }
-        }
-
     },
 
     // 

@@ -41,7 +41,7 @@ module.exports = {
 
         core.submit();
 
-        await core.sleep(0.3);
+        await core.sleep(0.5);
 
         // find til it already open ...
         // หาตำแหน่ง Arrow Down ว่ากราฟโหลดเสร็จหรือยัง
@@ -61,7 +61,7 @@ module.exports = {
             await core.sleep(0.1);
         }
 
-        //await core.sleep(0.5);
+        await core.sleep(0.1);
 
         // const endTime = performance.now();
 
