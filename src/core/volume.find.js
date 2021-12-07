@@ -300,8 +300,9 @@ module.exports = {
 
             const { color } = corecolour.colorlaneTest(x, y, { start: lastCoord.y, height: height, fy: y - lastCoord.y });
             // console.log(color)
-            const isgreen = await corecolour.beLikely(color, this.color.greens, 30);
-            if (isgreen) {
+            // const isgreen = await corecolour.beLikely(color, this.color.greens, 30);
+            const iswhite = await corecolour.beLikely(color, this.color.whites, 60);
+            if (!iswhite) {
                 resultset.n += 1;
             }
 

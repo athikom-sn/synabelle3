@@ -25,6 +25,8 @@ const { performance } = require('perf_hooks');
 
 const statusApi = require('./api/api.status');
 
+const { models } = require('./result.set');
+
 // Set up OCR ..
 // (async() => {
 //     await worker.load();
@@ -148,12 +150,12 @@ module.exports = {
         //const coins = ['ANY', 'RSR', 'SAND', 'GALA', 'RSR', 'DAR', 'AXS', 'MBOX', 'COTI', 'QI', 'SUPER', 'XTZ', 'ZIL', 'SUSHI', 'STX', 'BETA', 'MBOX'];
         // const coins = await coinapi.get();
         // const coins = { data: [{ name: "GTO" }, { name: "NULS" }, { name: "FIO" }, { name: 'AXS' }, { name: 'MBOX' }] };
-        const coins = isTest ? { data: [{ name: "LUNA" }] } : await coinapi.get();
+        const coins = isTest ? { data: [{ name: "BAT" }] } : await coinapi.get();
 
         const mainurl = `https://www.binance.com/en/trade`;
 
         var r = 0;
-        const maxround = isTest ? 1 : 36;
+        const maxround = isTest ? 1 : 6;
         while (r < maxround) {
             const { status } = await statusApi.get();
             if (status != 1) {
@@ -171,10 +173,13 @@ module.exports = {
                 let stacks = 0;
                 let stacksum = 0;
 
+                let result = [];
+
                 // เอากี่แท่ง
-                for (var i = 0; i < 4; i++) {
-                    let current = {
+                for (var i = 0; i < 2; i++) {
+                    const current = {
                         x: Number(1391 + width - (i * 8)),
+                        // x: 1444 - (i * 8),
                         y: 0
                     }
 
@@ -184,31 +189,35 @@ module.exports = {
 
                     // volume ที่แลกเปลี่ยนกันในช่วงนี้
                     const { n } = await volume.greenzone(current.x);
-                    console.log('bar', res.n, 'vol', n);
+                    // console.log('แท่งที่ ${i} bar', res.n, 'vol', n);
 
-                    stacksum += (res.n);
+                    result.push({
+                        price: res.n,
+                        volume: n
+                    });
 
-                    // เงื่อนไขคือ res.n > 20 หรือ ... ว่าไป
-                    if (res.n > 5) {
-                        stacks++;
-                        // console.log('send line')
-                        // await api.dispatch(`${name} => bar ${res.n}, vol ${n}`);
-                    }
                     // ให้หาว่า แท่งนี้ กับแท่งที่แล้ว จำนวนห่างกันเท่าไร
                     // แล้วยังเขียวอยุ่ไหม อันนี้น่าสน ..
                 }
 
-                const datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+                const resultB = models.precedures(result);
+                // console.log(resultB)
+                if (resultB == true) {
+                    const datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+                    await api.dispatch(`${name} => ${datestring}`);
+                }
+
+
 
                 // เขียว 3 ส่ง line
-                if (stacks >= 3) {
-                    await api.dispatch(`${name} => bar เขียว สาม ${datestring}`);
-                }
+                // if (stacks >= 3) {
+                //     await api.dispatch(`${name} => bar เขียว สาม ${datestring}`);
+                // }
 
-                if (stacksum >= 100) {
-                    // ..
-                    await api.dispatch(`${name} => bar sum เยอะ ${datestring}`);
-                }
+                // if (stacksum >= 200) {
+                //     // ..
+                //     await api.dispatch(`${name} => bar sum เยอะ ${datestring}`);
+                // }
 
 
             };
