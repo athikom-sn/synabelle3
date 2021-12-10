@@ -23,3 +23,10 @@ nodejs capture.js
 2.3 เทียบสี แคปภาพ เทียบภาพ บอทตัวนี้ยังไม่สามารถทำ object detetction ได้
 
 v1.0
+
+v1.8
+เตรียมแผนที่จะเพิ่ม Algorithm ตัวใหม่
+ฟังก์ชัน SHORT TRADE [เหรียญที่ Focused : SOL]
+const base_price = 180
+
+base_price จะอัปเดตไปตาม แท่งกราฟ 15 นาที ขึ้น/ลง ตามนั้น ซื้อ/ขาย ตาม base price 
