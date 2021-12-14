@@ -1,4 +1,5 @@
 ### READ ME ###
+## Flush data 1 days
 1. ลง nodejs version ล่าสุด
 2. สำหรับ window ให้ลง choco ด้วย powershell
 https://chocolatey.org/
