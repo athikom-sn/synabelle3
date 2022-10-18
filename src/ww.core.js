@@ -5,43 +5,32 @@ const core = require("./core/core.main.js");
 const { createWorker } = require("tesseract.js");
 
 const worker = createWorker({
-    langPath: 'C:\\Users\\ammso\\foo\\satania\\',
-    cacheMethod: 'none',
-    gzip: false
+    langPath: "C:\\Users\\ammso\\foo\\satania\\",
+    cacheMethod: "none",
+    gzip: false,
 });
 
 //const btc = require('./core/price.find.js');
-const volume = require('./core/volume.find');
+const volume = require("./core/volume.find");
 
-const sfysx = require('./core/core.sfysx');
+const sfysx = require("./core/core.sfysx");
 const robot = require("robotjs");
 
-const api = require('./api/api.caller');
-const coinapi = require('./api/api.coin');
+const api = require("./api/api.caller");
+const coinapi = require("./api/api.coin");
 
-const browser = require('./helper/helper.browser');
-const util = require('util');
-const { performance } = require('perf_hooks');
+const browser = require("./helper/helper.browser");
+const util = require("util");
+const { performance } = require("perf_hooks");
 
 // const statusApi = require('./api/api.status');
 
-const { models } = require('./result.set');
+const { models } = require("./result.set");
 const corecolour = require("./core/core.color.js");
-
-// Set up OCR ..
-// (async() => {
-//     await worker.load();
-//     await worker.loadLanguage("eng");
-//     await worker.initialize("eng");
-
-//     volume.construct({ worker: worker });
-// })();
 
 module.exports = {
     color: {
-        whites: [
-            '#ffffff'
-        ]
+        whites: ["#ffffff"],
     },
 
     getY: async function() {
@@ -52,7 +41,7 @@ module.exports = {
             if (_y <= 750) break;
 
             let linecolor = core.getColor(909, _y);
-            let ismargin = await corecolour.beLikely(linecolor, ['#ffffff'], 60);
+            let ismargin = await corecolour.beLikely(linecolor, ["#ffffff"], 60);
 
             if (ismargin) {
                 foundstatus = true;
@@ -64,15 +53,13 @@ module.exports = {
 
         if (foundstatus) {
             // ... วนรูปเพื่อหา เส้น margin ...
-            console.log('height', {
-                height: _static_y - _y
+            console.log("height", {
+                height: _static_y - _y,
             });
 
             // core.move(965, _y - 10);
             return _y;
-        } else {
-
-        }
+        } else {}
 
         return _y;
     },
@@ -111,7 +98,7 @@ module.exports = {
                 const iswhite = await corecolour.beLikely(color, this.color.whites, 30);
                 await core.sleep(1);
                 if (iswhite) {
-                    console.log('white');
+                    console.log("white");
                     break;
                 }
             }
@@ -124,8 +111,6 @@ module.exports = {
         // robot.mouseClick();
 
         // robot.mouseClick();
-
-
 
         return;
         await core.sleep(1);
@@ -150,10 +135,11 @@ module.exports = {
             for (var index = 0; index < coins.data.length; index++) {
                 const { name } = coins.data[index];
 
-                if (!isTest)
-                    await browser.open(`${mainurl}/${name}_USDT`);
+                if (!isTest) await browser.open(`${mainurl}/${name}_USDT`);
 
-                const { width } = await sfysx.findmargin(864).then(function(result) { return { width: 66 - result.width } });
+                const { width } = await sfysx.findmargin(864).then(function(result) {
+                    return { width: 66 - result.width };
+                });
 
                 let stacks = 0;
                 let stacksum = 0;
@@ -163,12 +149,12 @@ module.exports = {
                 // เอากี่แท่ง
                 for (var i = 0; i < 2; i++) {
                     const current = {
-                        x: Number(1391 + width - (i * 8)),
+                        x: Number(1391 + width - i * 8),
                         // x: 1444 - (i * 8),
-                        y: 0
-                    }
+                        y: 0,
+                    };
 
-                    // หาความยาว แท่งเขียว 
+                    // หาความยาว แท่งเขียว
                     const res = await sfysx.findall(current.x);
                     // console.log('ความสูงแท่งเขียว', res.n);
 
@@ -178,7 +164,7 @@ module.exports = {
 
                     result.push({
                         price: res.n,
-                        volume: n
+                        volume: n,
                     });
 
                     // ให้หาว่า แท่งนี้ กับแท่งที่แล้ว จำนวนห่างกันเท่าไร
@@ -188,11 +174,11 @@ module.exports = {
                 const resultB = models.precedures(result);
                 // console.log(resultB)
                 if (resultB == true) {
-                    const datestring = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+                    const datestring = new Date().toLocaleString("en-US", {
+                        timeZone: "Asia/Bangkok",
+                    });
                     await api.dispatch(`${name} => ${datestring}`);
                 }
-
-
 
                 // เขียว 3 ส่ง line
                 // if (stacks >= 3) {
@@ -203,9 +189,7 @@ module.exports = {
                 //     // ..
                 //     await api.dispatch(`${name} => bar sum เยอะ ${datestring}`);
                 // }
-
-
-            };
+            }
             r++;
         }
         // var ends = performance.now();
@@ -217,7 +201,7 @@ module.exports = {
         return;
     },
 
-    // 
+    //
     findAvailableTrade: async function() {
         // รอ 1 วิ เพื่อ เริ่มต้นโลกใหม่ ..
         await core.sleep(1);
@@ -226,6 +210,6 @@ module.exports = {
         await browser.openMarket();
 
         const coins = await coinapi.get();
-        console.log(coins.data)
+        console.log(coins.data);
     },
 };
